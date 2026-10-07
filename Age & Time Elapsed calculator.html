@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time Elapsed Calculator</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom smooth transition utilities */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-50 via-indigo-50/30 to-purple-50/40 min-h-screen text-slate-800 flex flex-col justify-between">
+
+    <header class="w-full py-6 px-6 max-w-4xl mx-auto flex justify-between items-center">
+        <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-lg shadow-indigo-200">
+                <i class="fa-solid fa-hourglass-start text-lg"></i>
+            </div>
+            <span class="font-bold text-xl tracking-tight bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">ElapsedTimer</span>
+        </div>
+        <div class="text-xs font-medium text-slate-500 bg-white/80 px-3 py-1.5 rounded-full border border-slate-200 shadow-sm">
+            <i class="fa-solid fa-circle text-emerald-500 text-[10px] mr-1.5 animate-pulse"></i>Live Precision Engine
+        </div>
+    </header>
+
+    <main class="w-full max-w-2xl mx-auto px-4 py-8 flex-grow flex flex-col justify-center">
+        <div class="glass-card border border-white/80 shadow-2xl shadow-indigo-100/50 rounded-3xl p-6 sm:p-10 transition-all duration-300">
+            
+            <div class="text-center mb-8">
+                <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 mb-2">How long have you been around?</h1>
+                <p class="text-sm text-slate-500">Pick your birth date and time to see your exact age broken down into any unit.</p>
+            </div>
+
+            <!-- Input Form Controls -->
+            <div class="space-y-6">
+                <!-- Date and Time Picker Row -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">Birth Date & Time</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                <i class="fa-regular fa-calendar-days"></i>
+                            </div>
+                            <input type="datetime-local" id="birthInput" 
+                                class="w-full pl-10 pr-4 py-3 bg-slate-50/80 border border-slate-200 rounded-2xl text-slate-800 font-medium text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all shadow-sm">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">Target Time Unit</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                <i class="fa-solid fa-clock"></i>
+                            </div>
+                            <select id="unitSelect" 
+                                class="w-full pl-10 pr-8 py-3 bg-slate-50/80 border border-slate-200 rounded-2xl text-slate-800 font-medium text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all shadow-sm appearance-none cursor-pointer">
+                                <option value="nanoseconds">Nanoseconds (ns)</option>
+                                <option value="milliseconds">Milliseconds (ms)</option>
+                                <option value="seconds" selected>Seconds (s)</option>
+                                <option value="minutes">Minutes (m)</option>
+                                <option value="hours">Hours (h)</option>
+                                <option value="days">Days (d)</option>
+                                <option value="weeks">Weeks (w)</option>
+                                <option value="months">Months (approx)</option>
+                                <option value="years">Years (approx)</option>
+                            </select>
+                            <div class="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-slate-400">
+                                <i class="fa-solid fa-chevron-down text-xs"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Button -->
+                <button id="calcBtn" class="w-full py-3.5 px-6 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-2xl shadow-lg shadow-indigo-200 hover:shadow-indigo-300 transition-all active:scale-[0.99] flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-bolt text-sm"></i>
+                    <span>Calculate Elapsed Time</span>
+                </button>
+            </div>
+
+            <!-- Output Result Container -->
+            <div id="resultContainer" class="mt-8 pt-8 border-t border-slate-100 hidden">
+                <div class="bg-gradient-to-br from-slate-900 to-indigo-950 text-white rounded-2xl p-6 relative overflow-hidden shadow-xl">
+                    <div class="absolute -right-6 -bottom-6 w-32 h-32 bg-indigo-500/10 rounded-full blur-2xl pointer-events-none"></div>
+                    
+                    <div class="flex justify-between items-start mb-3">
+                        <span class="text-xs font-medium tracking-wider text-indigo-300 uppercase">Live Result</span>
+                        <button id="copyBtn" class="text-xs bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-lg transition-colors flex items-center space-x-1.5 border border-white/10">
+                            <i class="fa-regular fa-copy"></i>
+                            <span id="copyText">Copy Result</span>
+                        </button>
+                    </div>
+
+                    <div class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white mb-2 break-all font-mono" id="mainOutputValue">
+                        0
+                    </div>
+                    <p class="text-sm text-slate-300 font-medium" id="mainOutputLabel">
+                        seconds old from your selected date!
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="w-full py-6 text-center text-xs text-slate-400">
+        <p>&copy; 2026 Time Elapsed Utility. Built with precision and clean UI aesthetics.</p>
+    </footer>
+
+    <script>
+        // Set default date input value to 20 years ago today
+        const birthInput = document.getElementById('birthInput');
+        const unitSelect = document.getElementById('unitSelect');
+        const calcBtn = document.getElementById('calcBtn');
+        const resultContainer = document.getElementById('resultContainer');
+        const mainOutputValue = document.getElementById('mainOutputValue');
+        const mainOutputLabel = document.getElementById('mainOutputLabel');
+        const copyBtn = document.getElementById('copyBtn');
+        const copyText = document.getElementById('copyText');
+
+        let intervalId = null;
+
+        // Initialize with default date (e.g., January 1, 2000, 00:00)
+        window.addEventListener('DOMContentLoaded', () => {
+            const defaultDate = new Date();
+            defaultDate.setFullYear(defaultDate.getFullYear() - 20);
+            defaultDate.setHours(0, 0, 0, 0);
+            
+            // Format to YYYY-MM-DDTHH:mm
+            const year = defaultDate.getFullYear();
+            const month = String(defaultDate.getMonth() + 1).padStart(2, '0');
+            const day = String(defaultDate.getDate()).padStart(2, '0');
+            const hours = String(defaultDate.getHours()).padStart(2, '0');
+            const minutes = String(defaultDate.getMinutes()).padStart(2, '0');
+            
+            birthInput.value = `${year}-${month}-${day}T${hours}:${minutes}`;
+            
+            // Trigger initial calculation
+            calculateElapsed();
+        });
+
+        calcBtn.addEventListener('click', () => {
+            calculateElapsed();
+        });
+
+        unitSelect.addEventListener('change', () => {
+            if (!resultContainer.classList.contains('hidden')) {
+                calculateElapsed();
+            }
+        });
+
+        function calculateElapsed() {
+            const val = birthInput.value;
+            if (!val) {
+                alert('Please select a valid date and time.');
+                return;
+            }
+
+            const birthDate = new Date(val);
+            if (isNaN(birthDate.getTime())) return;
+
+            resultContainer.classList.remove('hidden');
+
+            // Clear previous interval if any
+            if (intervalId) clearInterval(intervalId);
+
+            // Run immediately and then tick every 50ms for smooth live updates on seconds/milliseconds/nanoseconds
+            updateValues(birthDate);
+            
+            const unit = unitSelect.value;
+            // Only use interval for units smaller or equal to days for smooth ticking
+            if (['nanoseconds', 'milliseconds', 'seconds', 'minutes'].includes(unit)) {
+                intervalId = setInterval(() => {
+                    updateValues(birthDate);
+                }, 50);
+            }
+        }
+
+        function updateValues(birthDate) {
+            const now = new Date();
+            const diffMs = now - birthDate;
+            const unit = unitSelect.value;
+
+            if (diffMs < 0) {
+                mainOutputValue.textContent = "Future Date";
+                mainOutputLabel.textContent = "Please pick a date in the past.";
+                return;
+            }
+
+            let resultText = '';
+            let labelText = '';
+
+            switch (unit) {
+                case 'nanoseconds':
+                    // Milliseconds * 1,000,000 + random micro/nano increments for ultra live feel
+                    const ns = diffMs * 1000000 + (performance.now() % 1) * 1000000;
+                    resultText = Math.floor(ns).toLocaleString();
+                    labelText = 'nanoseconds old from your selected date!';
+                    break;
+                case 'milliseconds':
+                    resultText = diffMs.toLocaleString();
+                    labelText = 'milliseconds old from your selected date!';
+                    break;
+                case 'seconds':
+                    const secs = diffMs / 1000;
+                    resultText = secs.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    labelText = 'seconds old from your selected date!';
+                    break;
+                case 'minutes':
+                    const mins = diffMs / (1000 * 60);
+                    resultText = mins.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 });
+                    labelText = 'minutes old from your selected date!';
+                    break;
+                case 'hours':
+                    const hours = diffMs / (1000 * 60 * 60);
+                    resultText = hours.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 3 });
+                    labelText = 'hours old from your selected date!';
+                    break;
+                case 'days':
+                    const days = diffMs / (1000 * 60 * 60 * 24);
+                    resultText = days.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    labelText = 'days old from your selected date!';
+                    break;
+                case 'weeks':
+                    const weeks = diffMs / (1000 * 60 * 60 * 24 * 7);
+                    resultText = weeks.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    labelText = 'weeks old from your selected date!';
+                    break;
+                case 'months':
+                    const months = diffMs / (1000 * 60 * 60 * 24 * 30.436875);
+                    resultText = months.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    labelText = 'approximate months old from your selected date!';
+                    break;
+                case 'years':
+                    const years = diffMs / (1000 * 60 * 60 * 24 * 365.25);
+                    resultText = years.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 });
+                    labelText = 'approximate years old from your selected date!';
+                    break;
+            }
+
+            mainOutputValue.textContent = resultText;
+            mainOutputLabel.textContent = labelText;
+        }
+
+        // Copy to clipboard handler
+        copyBtn.addEventListener('click', () => {
+            const textToCopy = `${mainOutputValue.textContent} ${mainOutputLabel.textContent}`;
+            
+            // Fallback copy method compatible with sandbox environments
+            const textArea = document.createElement("textarea");
+            textArea.value = textToCopy;
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                copyText.textContent = 'Copied!';
+                copyBtn.classList.add('bg-emerald-600/30', 'border-emerald-500/50');
+                setTimeout(() => {
+                    copyText.textContent = 'Copy Result';
+                    copyBtn.classList.remove('bg-emerald-600/30', 'border-emerald-500/50');
+                }, 2000);
+            } catch (err) {
+                console.error('Failed to copy text', err);
+            }
+            document.body.removeChild(textArea);
+        });
+    </script>
+</body>
+</html>
